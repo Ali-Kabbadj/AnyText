@@ -5,7 +5,7 @@ a = Analysis(
     pathex=['..'],
     binaries=[],
     datas=[
-        ('../app/ui/assets', 'app/ui/assets')
+        ('../app/ui/assets', 'app/ui/assets'), ('../assets', 'assets') 
     ],
     hiddenimports=[],
     hookspath=['./scripts/hooks'],  # This tells PyInstaller to use our correct hook
@@ -34,5 +34,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None
+    icon='../assets/logo.ico'
 )

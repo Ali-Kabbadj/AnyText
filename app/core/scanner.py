@@ -10,11 +10,11 @@ from ..config.settings import (
 def _prune_empty_directories(directory: dict) -> dict:
     pruned_directory = {}
     for name, content in directory.items():
-        if isinstance(content, dict):  # It's a subdirectory
+        if isinstance(content, dict): 
             pruned_content = _prune_empty_directories(content)
-            if pruned_content:  # Only add it if it's not empty after pruning
+            if pruned_content: 
                 pruned_directory[name] = pruned_content
-        else:  # It's a file
+        else: 
             pruned_directory[name] = content
     return pruned_directory
 
@@ -36,16 +36,18 @@ def scan_directory(root_path: str) -> dict:
 
         sorted_filenames = sorted(filenames)
         for filename in sorted_filenames:
-            _, ext = os.path.splitext(filename)
-            if ext in EXCLUDED_EXTENSIONS:
+            filename_lower = filename.lower()
+            _, ext = os.path.splitext(filename_lower)
+
+            if ext in EXCLUDED_EXTENSIONS or filename_lower in EXCLUDED_EXTENSIONS:
                 continue
 
             full_path = os.path.join(dirpath, filename)
             all_files.append(full_path)
 
-            filename_counts[filename] += 1
+            filename_counts[filename_lower] += 1
             extensions[ext] += 1
-            current_level[filename] = None
+            current_level[filename] = None  
 
     pruned_tree = _prune_empty_directories(tree)
 

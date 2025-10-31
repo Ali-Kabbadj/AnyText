@@ -71,18 +71,18 @@ EXCLUDED_EXTENSIONS = {
     ".db",
     ".sqlite3",
     # OS-specific
-    ".DS_Store",
-    "Thumbs.db",
+    ".ds_store",
+    "thumbs.db",
     # web
     "package-lock.json",
 }
 
 GENERIC_FILENAMES = {
     "__init__.py",
-    "README.md",
+    "readme.md",
     "requirements.txt",
-    "Dockerfile",
-    "LICENSE",
+    "dockerfile",
+    "license",
     ".gitignore",
     "pyproject.toml",
 }

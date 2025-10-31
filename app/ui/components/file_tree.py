@@ -1,13 +1,12 @@
 import customtkinter as ctk
 import os
 from PIL import Image
-from ...core.state import AppState
-from ...core.utils import resource_path
-from .loading_spinner import LoadingSpinner
+
+from app.core.state import AppState
+from app.core.utils import resource_path
 
 
 class TreeNode(ctk.CTkFrame):
-
     def __init__(
         self,
         parent,
@@ -31,9 +30,9 @@ class TreeNode(ctk.CTkFrame):
         self.is_expanded = False
         self.state = initial_state
 
-        TREE_X_OFFSET = 28
-        INDENT_WIDTH = 20
-        HORIZONTAL_LINE_LENGTH = 15
+        TREE_X_OFFSET = 32
+        INDENT_WIDTH = 100
+        HORIZONTAL_LINE_LENGTH = 25
         LINE_COLOR = "#3a7ebf"
 
         canvas_width = 0
@@ -92,7 +91,8 @@ class TreeNode(ctk.CTkFrame):
                 self,
                 text=f" {text}",
                 fg_color="transparent",
-                text_color=("gray10", "gray90"),
+                hover_color="#202020",
+                text_color="#FFFFFF",
                 anchor="w",
                 image=assets["arrow_right"],
                 command=self._toggle,
@@ -101,7 +101,9 @@ class TreeNode(ctk.CTkFrame):
         else:
             spacer = ctk.CTkFrame(self, width=22, height=24, fg_color="transparent")
             spacer.pack(side="left")
-            self.label = ctk.CTkLabel(self, text=f" {text}", anchor="w")
+            self.label = ctk.CTkLabel(
+                self, text=f" {text}", anchor="w", text_color="#FFFFFF"
+            )
             self.label.pack(side="left", fill="x", expand=True)
 
     def _toggle(self):
@@ -132,24 +134,32 @@ class TreeNode(ctk.CTkFrame):
 
 class FileTree(ctk.CTkScrollableFrame):
     def __init__(self, parent, app_state: AppState):
-        super().__init__(parent, fg_color="#000000")
+        super().__init__(parent, fg_color="#000000", label_text_color="#FFFFFF")
         self.app_state = app_state
         self.app_state.register_on_change(self._update_checkbox_states)
         self._nodes = {}
-        self.loading_spinner: LoadingSpinner | None = None
         self._load_assets()
 
     def show_loading(self):
         self._clear_tree()
-        if self.loading_spinner is None or not self.loading_spinner.winfo_exists():
-            self.loading_spinner = LoadingSpinner(self)
-            self.loading_spinner.pack(pady=100, expand=True)
-            self.loading_spinner.start()
 
-    def _hide_loading_and_rebuild(self):
-        if self.loading_spinner and self.loading_spinner.winfo_exists():
-            self.loading_spinner.stop()
-            self.loading_spinner = None
+        loading_label = ctk.CTkLabel(
+            self, text="Loading...", font=ctk.CTkFont(size=18), text_color="gray60"
+        )
+
+        self.update_idletasks()
+        loading_label.update_idletasks()
+
+        panel_height = self.winfo_height()
+        label_height = loading_label.winfo_height()
+
+        spacer_height = panel_height / 2
+        spacer_height = max(0, spacer_height)
+
+        ctk.CTkFrame(self, fg_color="transparent", height=int(spacer_height)).pack()
+        loading_label.pack()
+
+    def hide_loading_and_rebuild(self):
         self._build_tree()
 
     def _load_assets(self):

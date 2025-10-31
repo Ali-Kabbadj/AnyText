@@ -17,6 +17,13 @@ class PreviewWindow(ctk.CTkToplevel):
         textbox = ctk.CTkTextbox(self, corner_radius=0)
         textbox.grid(row=0, column=0, sticky="nsew")
 
+        textbox.configure(
+            fg_color="#000000",
+            bg_color="#000000",
+            text_color="#FFFFFF",
+            border_color="#000000",
+        )
+
         textbox.insert("1.0", content_to_display)
         textbox.configure(state="disabled")
 

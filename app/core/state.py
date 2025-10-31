@@ -23,7 +23,7 @@ class AppState:
         for callback in self.on_state_change_callbacks:
             callback()
 
-    def set_project_path(self, path):
+    def set_project_path(self, path, notify=True):
         if not os.path.isdir(path):
             print(f"Error: Path is not a valid directory: {path}")
             return
@@ -38,7 +38,8 @@ class AppState:
         self.selected_files = set(self.all_files)
 
         self._build_directory_contents_cache()
-        self._notify_observers()
+        if notify:
+            self._notify_observers()
 
     def _build_directory_contents_cache(self):
         self.directory_contents.clear()
@@ -69,29 +70,31 @@ class AppState:
             self._notify_observers()
 
     def update_selection_by_extension(self, extension, is_selected):
-        files_to_update = []
-        if extension == "":
+        extension_lower = extension.lower()
+        if extension_lower == "":
             files_to_update = [
                 f for f in self.all_files if os.path.splitext(f)[1] == ""
             ]
         else:
-            files_to_update = [f for f in self.all_files if f.endswith(extension)]
+            files_to_update = [
+                f for f in self.all_files if f.lower().endswith(extension_lower)
+            ]
 
         for file_path in files_to_update:
             self.update_selection(file_path, is_selected, notify=False)
         self._notify_observers()
 
     def update_selection_by_generic_name(self, filename, is_selected):
+        filename_lower = filename.lower()
         for file_path in self.all_files:
-            if os.path.basename(file_path) == filename:
+            if os.path.basename(file_path).lower() == filename_lower:
                 self.update_selection(file_path, is_selected, notify=False)
         self._notify_observers()
 
     def update_selection_by_path(self, path, is_selected):
-        # Check if the path is a directory by seeing if it's a key in our cache
         if path in self.directory_contents:
             for file_path in self.directory_contents[path]:
                 self.update_selection(file_path, is_selected, notify=False)
-        else:  # It's a file
+        else:
             self.update_selection(path, is_selected, notify=False)
         self._notify_observers()
