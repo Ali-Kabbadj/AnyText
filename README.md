@@ -2,6 +2,7 @@
   <img src="assets/logo.png" alt="AnyText Logo" width="200">
 </p>
 
+
 <h1 align="center">AnyText</h1>
 
 <h3 align="center">Package your code repositories into a single, LLM-ready text file.</h3>
@@ -18,9 +19,14 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="assets/img_demo.png" alt="AnyText Application Screenshot" width="800">
-</p>
+<div align="center">
+  
+
+
+https://github.com/user-attachments/assets/d0d502c6-4b58-4700-8cd6-be3ab2a4f1a0
+
+
+</div>
 
 ## Overview
 
