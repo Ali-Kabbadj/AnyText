@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
 cd /d "%~dp0.."
 
@@ -38,26 +38,31 @@ echo.
 :: 4. Read, increment, and write the new version
 echo Reading and incrementing version...
 set version_file=scripts\version.txt
+set /p current_version=<%version_file%
 
-for /f "delims=" %%v in (%version_file%) do (
-    for /f "tokens=1,2,3 delims=." %%a in ("%%v") do (
-        set /a patch=%%c + 1
-        set new_version=%%a.%%b.%patch%
-    )
+for /f "tokens=1,2,3 delims=." %%a in ("!current_version!") do (
+    set /a major=%%a
+    set /a minor=%%b
+    set /a patch=%%c + 1
 )
 
-echo %new_version% > %version_file%
-echo New version is: %new_version%
+set new_version=!major!.!minor!.!patch!
+echo !new_version! > %version_file%
+echo New version is: !new_version!
 
-:: 5. Prompt for an optional suffix
+:: 5. Prompt for an optional suffix (handles the hyphen for you)
 echo.
-set /p suffix="Enter optional tag suffix (e.g., -beta, -rc1) or press Enter for none: "
+set "suffix="
+set /p suffix_input="Enter optional tag suffix (e.g., rc1, beta) or press Enter for none: "
+if defined suffix_input (
+    set "suffix=-!suffix_input!"
+)
 
 :: 6. Create the full tag name
-set tag=v%new_version%%suffix%
-echo Creating tag: %tag%
+set tag=v!new_version!!suffix!
+echo Creating tag: !tag!
 
-git tag %tag%
+git tag !tag!
 if %errorlevel% neq 0 (
     echo Failed to create git tag. Aborting.
     goto end
@@ -67,7 +72,7 @@ echo.
 :: 7. Push the commit and the new tag
 echo Pushing commit and tag to remote...
 git push
-git push origin %tag%
+git push origin !tag!
 
 if %errorlevel% neq 0 (
     echo Failed to push to remote. Please push manually.
@@ -76,7 +81,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo --- Release process complete! ---
-echo Successfully pushed commit and tag '%tag%'.
+echo Successfully pushed commit and tag '!tag!'.
 echo GitHub Actions workflow should now be triggered.
 
 :end
