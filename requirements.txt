@@ -1,0 +1,4 @@
+customtkinter
+ttkwidgets
+Pillow
+tiktoken
